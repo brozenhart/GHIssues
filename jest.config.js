@@ -3,10 +3,13 @@ module.exports = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },
+  setupFiles: ['./node_modules/react-native-gesture-handler/jestSetup.js'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   testRegex: '(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$',
   testPathIgnorePatterns: ['\\.snap$', '<rootDir>/node_modules/'],
-  transformIgnorePatterns: ['node_modules/?!(static-container)'],
+  transformIgnorePatterns: [
+    'node_modules/(?!(jest-)?@react-native|react-native|@react-navigation)',
+  ],
   cacheDirectory: '.jest/cache',
   globals: {
     'ts-jest': {
