@@ -154,7 +154,7 @@ exports[`App should render correctly 1`] = `
                         }
                       }
                     >
-                      RepoLocator
+                      Repositories
                     </Text>
                   </View>
                 </View>
@@ -323,11 +323,56 @@ exports[`App should render correctly 1`] = `
                             }
                           }
                         >
-                          <View>
-                            <Text>
-                              Repo Locator Screen
-                            </Text>
-                          </View>
+                          <RNCSafeAreaView
+                            style={
+                              Object {
+                                "flex": 1,
+                                "justifyContent": "flex-start",
+                              }
+                            }
+                          >
+                            <View
+                              style={
+                                Object {
+                                  "backgroundColor": "#FFFFFF",
+                                  "flex": 0,
+                                  "flexDirection": "row",
+                                  "paddingHorizontal": 10,
+                                  "paddingVertical": 20,
+                                }
+                              }
+                            >
+                              <Text
+                                style={
+                                  Object {
+                                    "flex": 0,
+                                  }
+                                }
+                              >
+                                Github Organisation:
+                              </Text>
+                              <TextInput
+                                allowFontScaling={true}
+                                autoCapitalize="none"
+                                blurOnSubmit={true}
+                                collapsable={false}
+                                onGestureHandlerEvent={[Function]}
+                                onGestureHandlerStateChange={[Function]}
+                                onSubmitEditing={[Function]}
+                                placeholder="facebook, apple..."
+                                rejectResponderTermination={true}
+                                returnKeyType="search"
+                                style={
+                                  Object {
+                                    "backgroundColor": "#FFFFFF",
+                                    "flex": 1,
+                                    "marginLeft": 10,
+                                  }
+                                }
+                                underlineColorAndroid="transparent"
+                              />
+                            </View>
+                          </RNCSafeAreaView>
                         </View>
                       </View>
                     </View>

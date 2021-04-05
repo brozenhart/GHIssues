@@ -2,22 +2,29 @@ import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { IssuesStackNavigator, NavigationRouteName } from '@/navigators';
-import { Strings } from '@/config';
+import { Locale } from '@/config';
+import { enableScreens } from 'react-native-screens';
+import { Provider } from 'react-redux';
+import { store } from '@/store';
 
 const Tab = createBottomTabNavigator();
 
+enableScreens();
+
 export const App = (): JSX.Element => {
   return (
-    <NavigationContainer>
-      <Tab.Navigator initialRouteName={NavigationRouteName.ISSUES}>
-        <Tab.Screen
-          name={NavigationRouteName.ISSUES}
-          component={IssuesStackNavigator}
-          options={{
-            tabBarLabel: Strings.TAB_BAR_LABEL_ISSUES,
-          }}
-        />
-      </Tab.Navigator>
-    </NavigationContainer>
+    <Provider store={store}>
+      <NavigationContainer>
+        <Tab.Navigator initialRouteName={NavigationRouteName.ISSUES}>
+          <Tab.Screen
+            name={NavigationRouteName.ISSUES}
+            component={IssuesStackNavigator}
+            options={{
+              tabBarLabel: Locale.TAB_BAR_LABEL_ISSUES,
+            }}
+          />
+        </Tab.Navigator>
+      </NavigationContainer>
+    </Provider>
   );
 };

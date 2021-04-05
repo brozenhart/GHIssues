@@ -1,1 +1,1 @@
-export * from './RepoLocatorScreen';
+export * from './RepositoriesScreen';
