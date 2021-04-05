@@ -6,7 +6,7 @@ import {
   EntityState,
   PayloadAction,
 } from '@reduxjs/toolkit';
-import { ThunkAPI } from 'root-types';
+import { RootState, ThunkAPI } from 'root-types';
 import { RespositoryResponseData } from './models';
 
 export interface OrganizationState {
@@ -87,4 +87,9 @@ export const {
   setEtag,
   resetLoading,
 } = organizationSlice.actions;
+
+export const repositoriesSelectors = repositoriesAdapter.getSelectors<RootState>(
+  state => state.organization.repositories,
+);
+
 export const organizationReducer = organizationSlice.reducer;
