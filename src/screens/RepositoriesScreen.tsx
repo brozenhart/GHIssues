@@ -4,6 +4,7 @@ import {
   repositoriesSelectors,
 } from '@/modules/organization';
 import { RespositoryResponseData } from '@/modules/organization/models';
+import { useAppDispatch } from '@/store';
 import React, { memo } from 'react';
 import {
   ActivityIndicator,
@@ -13,13 +14,13 @@ import {
   View,
 } from 'react-native';
 import { FlatList, TextInput } from 'react-native-gesture-handler';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { RootState } from 'root-types';
 
 const RepositoriesScreen = (): JSX.Element => {
   const loading = useSelector((state: RootState) => state.organization.loading);
   const repositories = useSelector(repositoriesSelectors.selectAll);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const renderItem = ({
     item,

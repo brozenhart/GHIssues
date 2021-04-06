@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
+import { useDispatch } from 'react-redux';
 import logger from 'redux-logger';
-import { ServiceLocator } from 'root-types';
+import { ServiceLocator, AppDispatch } from 'root-types';
 import { NetworkServiceImplementation } from 'services/network-service';
 import { rootReducer } from './root-reducer';
 
@@ -15,3 +16,6 @@ export const store = configureStore({
       logger,
     ),
 });
+
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export const useAppDispatch = () => useDispatch<AppDispatch>();
