@@ -17,7 +17,7 @@ export interface OrganizationState {
 }
 
 export const ActionTypes = {
-  FETCH_REPOSITORIES: 'repositories/fetchRepositories',
+  FETCH_REPOSITORIES: 'organization/fetchRepositories',
 };
 
 export const fetchRepositories = createAsyncThunk<
@@ -26,21 +26,30 @@ export const fetchRepositories = createAsyncThunk<
   ThunkAPI
 >(
   ActionTypes.FETCH_REPOSITORIES,
-  async (organization: string, { extra, dispatch, getState }) => {
-    const { etag } = getState().organization;
-    const { get } = extra.networkService;
-    const response = await get<RespositoryResponseData[]>(
-      `orgs/${organization}/repos`,
-      {
+  async (
+    organization: string,
+    { extra, dispatch, getState, rejectWithValue },
+  ) => {
+    try {
+      const { etag } = getState().organization;
+      const { get } = extra.networkService;
+      const headers = {
         ...Constant.API.AUTH_HEADER,
         ...(etag && { 'If-None-Match': etag }),
-      },
-    );
-    if (response.status !== 304) {
-      dispatch(setOrganizationName(organization));
-      dispatch(setEtag(response.headers.etag));
+      };
+      const response = await get<RespositoryResponseData[]>(
+        `orgs/${organization}/repos`,
+        headers,
+      );
+      if (response.status !== 304) {
+        dispatch(setOrganizationName(organization));
+        dispatch(setEtag(response.headers.etag));
+      }
+      return response.data;
+    } catch (err) {
+      if (!err.response) throw err;
+      return rejectWithValue(err.response.data);
     }
-    return response.data;
   },
 );
 
@@ -49,7 +58,7 @@ const repositoriesAdapter = createEntityAdapter<RespositoryResponseData>({
   sortComparer: (a, b) => a.name.localeCompare(b.name),
 });
 
-const initialState: OrganizationState = {
+export const initialState: OrganizationState = {
   repositories: repositoriesAdapter.getInitialState(),
   loading: 'idle',
 };

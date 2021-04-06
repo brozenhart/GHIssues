@@ -323,11 +323,12 @@ exports[`App should render correctly 1`] = `
                             }
                           }
                         >
-                          <RNCSafeAreaView
+                          <View
                             style={
                               Object {
                                 "flex": 1,
                                 "justifyContent": "flex-start",
+                                "paddingTop": 20,
                               }
                             }
                           >
@@ -337,6 +338,7 @@ exports[`App should render correctly 1`] = `
                                   "backgroundColor": "#FFFFFF",
                                   "flex": 0,
                                   "flexDirection": "row",
+                                  "marginBottom": 10,
                                   "paddingHorizontal": 10,
                                   "paddingVertical": 20,
                                 }
@@ -372,7 +374,59 @@ exports[`App should render correctly 1`] = `
                                 underlineColorAndroid="transparent"
                               />
                             </View>
-                          </RNCSafeAreaView>
+                            <RCTScrollView
+                              ListEmptyComponent={[Function]}
+                              collapsable={false}
+                              data={Array []}
+                              disableVirtualization={false}
+                              getItem={[Function]}
+                              getItemCount={[Function]}
+                              horizontal={false}
+                              initialNumToRender={10}
+                              keyExtractor={[Function]}
+                              maxToRenderPerBatch={10}
+                              onContentSizeChange={[Function]}
+                              onEndReachedThreshold={2}
+                              onGestureHandlerEvent={[Function]}
+                              onGestureHandlerStateChange={[Function]}
+                              onLayout={[Function]}
+                              onMomentumScrollEnd={[Function]}
+                              onScroll={[Function]}
+                              onScrollBeginDrag={[Function]}
+                              onScrollEndDrag={[Function]}
+                              removeClippedSubviews={false}
+                              renderItem={[Function]}
+                              renderScrollComponent={[Function]}
+                              scrollEventThrottle={50}
+                              stickyHeaderIndices={Array []}
+                              updateCellsBatchingPeriod={50}
+                              viewabilityConfigCallbackPairs={Array []}
+                              windowSize={21}
+                            >
+                              <View>
+                                <View
+                                  style={
+                                    Object {
+                                      "alignItems": "center",
+                                      "flex": 1,
+                                      "flexDirection": "column",
+                                      "marginTop": 30,
+                                    }
+                                  }
+                                >
+                                  <Text
+                                    style={
+                                      Object {
+                                        "color": "#696969",
+                                      }
+                                    }
+                                  >
+                                    No repositories found
+                                  </Text>
+                                </View>
+                              </View>
+                            </RCTScrollView>
+                          </View>
                         </View>
                       </View>
                     </View>

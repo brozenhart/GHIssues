@@ -1,5 +1,5 @@
 import { Constant } from '@/config';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance, AxiosResponse } from 'axios';
 
 export type AuthorizationHeaders = { Authorization: string };
 
@@ -13,11 +13,10 @@ export interface NetworkService {
 export class NetworkServiceImplementation implements NetworkService {
   private readonly axios: AxiosInstance;
 
-  constructor() {
-    this.axios = axios.create({
-      baseURL: Constant.API.BASE_URL,
-      headers: Constant.API.DEFAULT_HEADERS,
-    });
+  constructor(axios: AxiosInstance) {
+    axios.defaults.baseURL = Constant.API.BASE_URL;
+    axios.defaults.headers = Constant.API.DEFAULT_HEADERS;
+    this.axios = axios;
   }
 
   get = async <T>(

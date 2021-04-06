@@ -8,7 +8,7 @@
     "start": "react-native start",
     "test": "jest --verbose --coverage",
     "test:update": "jest --verbose --coverage --updateSnapshot",
-    "test:watch": "jest --verbose --watch",
+    "test:watch": "jest --verbose --coverage --watch",
     "coverage": "jest --verbose --coverage && open ./coverage/lcov-report/index.html",
     "lint": "eslint .",
     "tsc": "./node_modules/typescript/bin/tsc"
@@ -44,6 +44,7 @@
     "@types/redux-logger": "^3.0.8",
     "@typescript-eslint/eslint-plugin": "^4.20.0",
     "@typescript-eslint/parser": "^4.20.0",
+    "axios-mock-adapter": "^1.19.0",
     "babel-jest": "^26.6.3",
     "babel-plugin-module-resolver": "^4.1.0",
     "eslint": "7.14.0",
@@ -59,7 +60,6 @@
     "metro-react-native-babel-preset": "^0.64.0",
     "prettier": "^2.2.1",
     "react-test-renderer": "17.0.1",
-    "redux-mock-store": "^1.5.4",
     "ts-jest": "^26.5.4",
     "typescript": "^4.2.3"
   }
