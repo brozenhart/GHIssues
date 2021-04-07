@@ -1,1 +1,1 @@
-export * from './RepositoriesScreen';
+export * from './IssuesSearchScreen';

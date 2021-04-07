@@ -7,6 +7,7 @@ export interface NetworkService {
   get: <T>(
     path: string,
     headers: AuthorizationHeaders,
+    params?: any,
   ) => Promise<AxiosResponse<T>>;
 }
 
@@ -22,7 +23,8 @@ export class NetworkServiceImplementation implements NetworkService {
   get = async <T>(
     path: string,
     headers: AuthorizationHeaders,
+    params?: Record<string, any>,
   ): Promise<AxiosResponse<T>> => {
-    return await this.axios.get<T>(path, { headers });
+    return await this.axios.get<T>(path, { headers, params });
   };
 }

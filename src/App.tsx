@@ -15,9 +15,9 @@ export const App = (): JSX.Element => {
   return (
     <Provider store={store}>
       <NavigationContainer>
-        <Tab.Navigator initialRouteName={NavigationRouteName.ISSUES}>
+        <Tab.Navigator initialRouteName={NavigationRouteName.ISSUES_SEARCH}>
           <Tab.Screen
-            name={NavigationRouteName.ISSUES}
+            name={NavigationRouteName.ISSUES_SEARCH}
             component={IssuesStackNavigator}
             options={{
               tabBarLabel: Locale.TAB_BAR_LABEL_ISSUES,

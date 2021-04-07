@@ -1,6 +1,6 @@
-import { organizationReducer } from '@/modules/organization';
+import { issuesSearchReducer } from '@/modules/issues-search';
 import { combineReducers } from '@reduxjs/toolkit';
 
 export const rootReducer = combineReducers({
-  organization: organizationReducer,
+  issuesSearch: issuesSearchReducer,
 });

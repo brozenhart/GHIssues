@@ -1,7 +1,7 @@
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
-import { RespositoryResponseData } from '../models';
-import { fetchRepositories, initialState } from '../slice';
+import { IssuesResponseData } from '../models';
+import { fetchIssues, FetchIssuesArguments, initialState } from '../slice';
 import { RootState, ServiceLocator, ThunkAPI } from 'root-types';
 import { AsyncThunkAction } from '@reduxjs/toolkit';
 import { NetworkServiceImplementation } from 'services/network-service';
@@ -22,79 +22,79 @@ describe('Repositories thunk', () => {
   });
 
   describe('fetch repositories', () => {
-    let action: AsyncThunkAction<RespositoryResponseData[], string, ThunkAPI>;
+    let action: AsyncThunkAction<
+      IssuesResponseData[],
+      FetchIssuesArguments,
+      ThunkAPI
+    >;
     let dispatch: any;
-    const mockState: RootState = {
-      organization: { ...initialState, etag: 'etag' },
+    let mockState: RootState = {
+      issuesSearch: {
+        ...initialState,
+      },
     };
 
     let getState: () => RootState;
 
-    let arg: string;
-    let resultData: RespositoryResponseData[];
-    ('facebook');
+    let arg: FetchIssuesArguments;
+    let resultData: IssuesResponseData[];
 
     beforeEach(() => {
       dispatch = jest.fn();
+      mockState = {
+        issuesSearch: {
+          ...mockState.issuesSearch,
+          isLoading: false,
+          organization: 'facebook',
+          repository: 'react',
+        },
+      };
       getState = () => mockState;
 
-      arg = 'facebook';
-
-      api.reset();
-      api.onGet(`orgs/${arg}/repos`).reply(
-        200,
-        {
-          data: resultData,
-        },
-        { etag: 'new_etag' },
-      );
-
+      arg = {};
       resultData = [
         {
           id: 0,
-          name: 'Repo name',
-          description: 'This is a description of the repo.',
-          open_issues_count: 1,
+          title: 'Issue title',
+          body: 'This is a body of the issue.',
+          state: 'open',
         },
       ];
 
-      action = fetchRepositories(arg);
+      api.reset();
+      api.onGet(`repos/facebook/react/issues`).reply(200, {
+        data: resultData,
+      });
+
+      action = fetchIssues(arg);
     });
 
     it('calls the api correctly', async () => {
       await action(dispatch, getState, serviceLocator);
 
       expect(api.history.get.length).toBe(1);
-      expect(api.history.get[0].url).toBe(`orgs/${arg}/repos`);
+      expect(api.history.get[0].url).toBe(`repos/facebook/react/issues`);
     });
 
     it('dispatches successfully', async () => {
       const expectedActions = [
         {
-          type: 'organization/fetchRepositories/pending',
+          type: 'issues-search/fetchIssues/pending',
         },
-        { type: 'organization/setOrganizationName', payload: 'facebook' },
-        { type: 'organization/setEtag', payload: 'new_etag' },
         {
-          type: 'organization/fetchRepositories/fulfilled',
+          type: 'issues-search/fetchIssues/fulfilled',
           payload: { data: resultData },
         },
       ];
 
       await action(dispatch, getState, serviceLocator);
 
-      expect(dispatch.mock.calls.length).toBe(4);
+      expect(dispatch.mock.calls.length).toBe(2);
       expect(dispatch.mock.calls[0][0]).toEqual(
         expect.objectContaining(expectedActions[0]),
       );
       expect(dispatch.mock.calls[1][0]).toEqual(
         expect.objectContaining(expectedActions[1]),
-      );
-      expect(dispatch.mock.calls[2][0]).toEqual(
-        expect.objectContaining(expectedActions[2]),
-      );
-      expect(dispatch.mock.calls[3][0]).toEqual(
-        expect.objectContaining(expectedActions[3]),
       );
     });
   });
