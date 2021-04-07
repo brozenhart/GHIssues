@@ -12,14 +12,17 @@ import { NavigationRouteName } from 'navigators/types';
 import { RootState, ThunkAPI } from 'root-types';
 import { IssuesResponseData } from './models';
 
+export type IssuesFilter = 'all' | 'open' | 'closed';
+export type IssuesSort = 'updated' | 'created' | 'comments';
+
 export interface OrganizationState {
   organization?: string;
   repository?: string;
   issues: EntityState<IssuesResponseData>;
   isLoading: boolean;
   page: number;
-  state: 'all' | 'open' | 'closed';
-  sort: 'updated' | 'created' | 'comments';
+  filter: IssuesFilter;
+  sort: IssuesSort;
 }
 
 export const ActionTypes = {
@@ -42,7 +45,7 @@ export const fetchIssues = createAsyncThunk<
         organization,
         repository,
         page,
-        state,
+        filter,
         sort,
       } = getState().issuesSearch;
       const { get } = extra.networkService;
@@ -55,7 +58,7 @@ export const fetchIssues = createAsyncThunk<
         },
         {
           ...(page && { page }),
-          ...(state && { state }),
+          ...(filter && { state: filter }),
           ...(sort && { sort }),
         },
       );
@@ -77,7 +80,7 @@ export const initialState: OrganizationState = {
   issues: issuesAdapter.getInitialState(),
   isLoading: false,
   page: 1,
-  state: 'all',
+  filter: 'all',
   sort: 'updated',
 };
 
@@ -95,7 +98,11 @@ const issuesSearchSlice = createSlice({
       state.page += 1;
     },
     resetPage: state => {
-      state.page = 1;
+      state.page = initialState.page;
+    },
+    setIssuesFilter: (state, action: PayloadAction<IssuesFilter>) => {
+      state.issues = initialState.issues;
+      state.filter = action.payload;
     },
   },
   extraReducers: builder => {
@@ -117,6 +124,7 @@ export const {
   setRepository,
   setNextPage,
   resetPage,
+  setIssuesFilter,
 } = issuesSearchSlice.actions;
 
 export const issuesSelectors = issuesAdapter.getSelectors<RootState>(

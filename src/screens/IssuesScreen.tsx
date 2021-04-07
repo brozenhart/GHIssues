@@ -1,12 +1,14 @@
 import { Color, Locale } from '@/config';
 import {
   fetchIssues,
+  IssuesFilter,
   IssuesResponseData,
   issuesSelectors,
+  setIssuesFilter,
   setNextPage,
 } from '@/modules/issues-search';
 import { useAppDispatch } from '@/store';
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   ActivityIndicator,
   ListRenderItemInfo,
@@ -17,13 +19,18 @@ import {
 import { FlatList } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import { RootState } from 'root-types';
+import SwitchSelector from 'react-native-switch-selector';
 
 export const IssuesScreen = (): JSX.Element => {
-  const issues = useSelector(issuesSelectors.selectAll);
-  const isLoading = useSelector(
-    (state: RootState) => state.issuesSearch.isLoading,
+  const { filter, page, isLoading } = useSelector(
+    (state: RootState) => state.issuesSearch,
   );
+  const issues = useSelector(issuesSelectors.selectAll);
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(fetchIssues({}));
+  }, [dispatch, filter, page]);
 
   const renderItem = ({ item }: ListRenderItemInfo<IssuesResponseData>) => {
     return (
@@ -47,6 +54,22 @@ export const IssuesScreen = (): JSX.Element => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.filters}>
+        <SwitchSelector
+          initial={0}
+          onPress={value => dispatch(setIssuesFilter(value as IssuesFilter))}
+          textColor={Color.DIM_GREY}
+          selectedColor={Color.WHITE}
+          buttonColor={Color.DIM_GREY}
+          borderColor={Color.DIM_GREY}
+          hasPadding
+          options={[
+            { label: 'All', value: 'all' },
+            { label: 'Open', value: 'open' },
+            { label: 'Closed', value: 'closed' },
+          ]}
+        />
+      </View>
       <FlatList
         ListFooterComponent={renderFooter}
         data={issues}
@@ -54,10 +77,7 @@ export const IssuesScreen = (): JSX.Element => {
         keyExtractor={item => `row-${item.id}`}
         onEndReachedThreshold={0}
         onEndReached={() => {
-          if (!isLoading) {
-            dispatch(setNextPage());
-            dispatch(fetchIssues({}));
-          }
+          if (!isLoading) dispatch(setNextPage());
         }}
       />
     </View>
@@ -68,6 +88,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'flex-start',
+  },
+  filters: {
+    backgroundColor: Color.WHITE,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
   },
   footer: {
     alignItems: 'center',
