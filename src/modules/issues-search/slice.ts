@@ -102,8 +102,6 @@ export const initialState: OrganizationState = issuesAdapter.getInitialState({
   page: 1,
   filter: 'all',
   sort: 'updated',
-  organization: 'facebook',
-  repository: 'react',
 });
 
 const issuesSearchSlice = createSlice({
@@ -135,6 +133,14 @@ const issuesSearchSlice = createSlice({
     setSelectedIssue: (state, action: PayloadAction<IssuesResponseData>) => {
       state.selectedIssue = action.payload;
     },
+    resetIssues: state => {
+      state.entities = initialState.entities;
+      state.ids = initialState.ids;
+      state.filter = initialState.filter;
+      state.sort = initialState.sort;
+      state.page = initialState.page;
+      state.selectedIssue = undefined;
+    },
   },
   extraReducers: builder => {
     builder.addCase(fetchIssues.pending, state => {
@@ -158,6 +164,7 @@ export const {
   setIssuesFilter,
   setIssuesSort,
   setSelectedIssue,
+  resetIssues,
 } = issuesSearchSlice.actions;
 
 export const issuesSelectors = issuesAdapter.getSelectors<RootState>(

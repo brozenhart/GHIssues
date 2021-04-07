@@ -5,13 +5,14 @@ import {
   IssuesResponseData,
   issuesSelectors,
   IssuesSort,
+  resetIssues,
   setIssuesFilter,
   setIssuesSort,
   setNextPage,
   showIssueDetails,
 } from '@/modules/issues-search';
 import { useAppDispatch } from '@/store';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   ActivityIndicator,
   ListRenderItemInfo,
@@ -33,10 +34,18 @@ export const IssuesScreen = (): JSX.Element => {
   );
   const issues = useSelector(issuesSelectors.selectAll);
   const dispatch = useAppDispatch();
+  const notInitialRender = useRef(false);
 
   useEffect(() => {
-    dispatch(fetchIssues({}));
+    if (notInitialRender.current) dispatch(fetchIssues({}));
+    else notInitialRender.current = true;
   }, [dispatch, filter, sort, page]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(resetIssues());
+    };
+  }, [dispatch]);
 
   const renderItem = ({ item }: ListRenderItemInfo<IssuesResponseData>) => {
     return (

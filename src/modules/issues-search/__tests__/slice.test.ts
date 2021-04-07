@@ -1,7 +1,7 @@
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
 import { IssuesResponseData } from '../models';
-import { fetchIssues, FetchIssuesArguments, initialState } from '../slice';
+import { fetchIssues, DefaultThunkArguments, initialState } from '../slice';
 import { RootState, ServiceLocator, ThunkAPI } from 'root-types';
 import { AsyncThunkAction } from '@reduxjs/toolkit';
 import { NetworkServiceImplementation } from 'services/network-service';
@@ -24,7 +24,7 @@ describe('Repositories thunk', () => {
   describe('fetch repositories', () => {
     let action: AsyncThunkAction<
       IssuesResponseData[],
-      FetchIssuesArguments,
+      DefaultThunkArguments,
       ThunkAPI
     >;
     let dispatch: any;
@@ -36,7 +36,7 @@ describe('Repositories thunk', () => {
 
     let getState: () => RootState;
 
-    let arg: FetchIssuesArguments;
+    let arg: DefaultThunkArguments;
     let resultData: IssuesResponseData[];
 
     beforeEach(() => {
