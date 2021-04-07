@@ -5,6 +5,8 @@ export const Locale = {
   ISSUES_SEARCH_TEXTFIELD_LABEL_REPOSITORY: 'Repository:',
   ISSUES_SEARCH_TEXTFIELD_PLACEHOLDER_ORGANIZATION: 'facebook, apple...',
   ISSUES_SEARCH_TEXTFIELD_PLACEHOLDER_REPOSITORY: 'react, swift...',
+  ISSUES_SEARCH_ORGANIZATION_FIELD_NAME: 'Github organization',
+  ISSUES_SEARCH_REPOSITORY_FIELD_NAME: 'Repository',
 
   ISSUES_HEADER_TITLE: 'Issues',
   ISSUES_STATUS_TITLE: 'Status:',
@@ -15,4 +17,9 @@ export const Locale = {
   ISSUES_SORT_OPTION_LABEL_UPDATED: 'Updated',
   ISSUES_SORT_OPTION_LABEL_CREATED: 'Created',
   ISSUES_SORT_OPTION_LABEL_COMMENTS: 'Comments',
+
+  DEFAULT_ERROR_TITLE: 'Error',
+  DEFAULT_ERROR_MESSAGE: 'Something when wrong. Please try again later.',
+  ERROR_ISSUES_NOT_FOUND: 'No issues found.',
+  ERROR_NO_ISSUES: 'Repository has no issues.',
 };

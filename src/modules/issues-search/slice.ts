@@ -1,37 +1,21 @@
-import { Constant } from '@/config';
-import { Buffer } from 'buffer';
-import { useNavigation } from '@react-navigation/core';
-import {
-  createAsyncThunk,
-  createEntityAdapter,
-  createSlice,
-  EntityState,
-  PayloadAction,
-} from '@reduxjs/toolkit';
+import { Constant, Locale } from '@/config';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { NavigationRouteName } from 'navigators/types';
-import { RootState, ThunkAPI } from 'root-types';
+import { ThunkAPI } from 'root-types';
 import { IssuesResponseData } from './models';
-
-export type IssuesFilter = 'all' | 'open' | 'closed';
-export type IssuesSort = 'updated' | 'created' | 'comments';
-
-export type OrganizationState = EntityState<IssuesResponseData> & {
-  organization?: string;
-  repository?: string;
-  isLoading: boolean;
-  page: number;
-  filter: IssuesFilter;
-  sort: IssuesSort;
-  selectedIssue?: IssuesResponseData;
-};
+import { createAuthHeaders, validateRequiredFields } from 'utils';
+import {
+  DefaultThunkArguments,
+  IssuesFilter,
+  IssuesSearchState,
+  IssuesSort,
+  ShowIssueDetailsThunkArguments,
+} from './types';
+import { issuesAdapter, issuesSelectors } from './entity-adapters';
 
 export const ActionTypes = {
   FETCH_ISSUES: 'issues-search/fetchIssues',
   SHOW_ISSUE_DETAILS: 'issues-search/showIssueDetails',
-};
-
-export type DefaultThunkArguments = {
-  navigation?: ReturnType<typeof useNavigation>;
 };
 
 export const fetchIssues = createAsyncThunk<
@@ -40,29 +24,43 @@ export const fetchIssues = createAsyncThunk<
   ThunkAPI
 >(
   ActionTypes.FETCH_ISSUES,
-  async ({ navigation }, { extra, rejectWithValue, getState }) => {
+  async ({ navigation }, { extra, rejectWithValue, getState, dispatch }) => {
+    const {
+      organization,
+      repository,
+      page,
+      filter,
+      sort,
+      isLastPageReached,
+    } = getState().issuesSearch;
+    const { get } = extra.networkService;
+    if (isLastPageReached)
+      rejectWithValue({ message: Locale.ERROR_ISSUES_NOT_FOUND });
+
     try {
-      const {
-        organization,
-        repository,
-        page,
-        filter,
-        sort,
-      } = getState().issuesSearch;
-      const { get } = extra.networkService;
+      await validateRequiredFields([
+        {
+          name: Locale.ISSUES_SEARCH_ORGANIZATION_FIELD_NAME,
+          value: organization,
+        },
+        { name: Locale.ISSUES_SEARCH_REPOSITORY_FIELD_NAME, value: repository },
+      ]);
       const response = await get<IssuesResponseData[]>(
         `repos/${organization}/${repository}/issues`,
-        {
-          Authorization: `Basic ${Buffer.from(
-            `${Constant.API.AUTH.username}:${Constant.API.AUTH.password}`,
-          ).toString('base64')}`,
-        },
+        createAuthHeaders(
+          Constant.API.AUTH.username,
+          Constant.API.AUTH.password,
+        ),
         {
           ...(page && { page }),
           ...(filter && { state: filter }),
           ...(sort && { sort }),
         },
       );
+      if (response.data.length === 0) {
+        dispatch(setLastPageReached());
+        return rejectWithValue({ message: Locale.ERROR_NO_ISSUES });
+      }
 
       if (navigation !== undefined && page === 1)
         navigation.navigate(NavigationRouteName.ISSUES);
@@ -73,10 +71,6 @@ export const fetchIssues = createAsyncThunk<
     }
   },
 );
-
-type ShowIssueDetailsThunkArguments = Required<DefaultThunkArguments> & {
-  issueId: number;
-};
 
 export const showIssueDetails = createAsyncThunk<
   void,
@@ -93,13 +87,10 @@ export const showIssueDetails = createAsyncThunk<
   },
 );
 
-const issuesAdapter = createEntityAdapter<IssuesResponseData>({
-  selectId: data => data.id,
-});
-
-export const initialState: OrganizationState = issuesAdapter.getInitialState({
+export const initialState: IssuesSearchState = issuesAdapter.getInitialState({
   isLoading: false,
   page: 1,
+  isLastPageReached: false,
   filter: 'all',
   sort: 'updated',
 });
@@ -117,17 +108,21 @@ const issuesSearchSlice = createSlice({
     setNextPage: state => {
       state.page += 1;
     },
-    resetPage: state => {
-      state.page = initialState.page;
+    setLastPageReached: state => {
+      state.isLastPageReached = true;
     },
     setIssuesFilter: (state, action: PayloadAction<IssuesFilter>) => {
+      state.page = initialState.page;
       state.entities = initialState.entities;
       state.ids = initialState.ids;
+      state.isLastPageReached = false;
       state.filter = action.payload;
     },
     setIssuesSort: (state, action: PayloadAction<IssuesSort>) => {
+      state.page = initialState.page;
       state.entities = initialState.entities;
       state.ids = initialState.ids;
+      state.isLastPageReached = false;
       state.sort = action.payload;
     },
     setSelectedIssue: (state, action: PayloadAction<IssuesResponseData>) => {
@@ -139,7 +134,11 @@ const issuesSearchSlice = createSlice({
       state.filter = initialState.filter;
       state.sort = initialState.sort;
       state.page = initialState.page;
+      state.isLastPageReached = initialState.isLastPageReached;
       state.selectedIssue = undefined;
+    },
+    resetError: state => {
+      state.error = undefined;
     },
   },
   extraReducers: builder => {
@@ -150,8 +149,12 @@ const issuesSearchSlice = createSlice({
       state.isLoading = false;
       issuesAdapter.upsertMany(state, action.payload);
     });
-    builder.addCase(fetchIssues.rejected, state => {
+    builder.addCase(fetchIssues.rejected, (state, action) => {
+      const { payload }: any = action;
       state.isLoading = false;
+      state.error = action.meta.rejectedWithValue
+        ? { message: payload.message }
+        : action.error;
     });
   },
 });
@@ -160,15 +163,12 @@ export const {
   setOrganization,
   setRepository,
   setNextPage,
-  resetPage,
+  setLastPageReached,
   setIssuesFilter,
   setIssuesSort,
   setSelectedIssue,
   resetIssues,
+  resetError,
 } = issuesSearchSlice.actions;
-
-export const issuesSelectors = issuesAdapter.getSelectors<RootState>(
-  state => state.issuesSearch,
-);
 
 export const issuesSearchReducer = issuesSearchSlice.reducer;

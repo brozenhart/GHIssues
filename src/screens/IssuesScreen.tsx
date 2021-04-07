@@ -29,7 +29,7 @@ import { useNavigation } from '@react-navigation/core';
 
 export const IssuesScreen = (): JSX.Element => {
   const navigation = useNavigation();
-  const { filter, sort, page, isLoading } = useSelector(
+  const { filter, sort, page, isLoading, isLastPageReached } = useSelector(
     (state: RootState) => state.issuesSearch,
   );
   const issues = useSelector(issuesSelectors.selectAll);
@@ -37,9 +37,10 @@ export const IssuesScreen = (): JSX.Element => {
   const notInitialRender = useRef(false);
 
   useEffect(() => {
-    if (notInitialRender.current) dispatch(fetchIssues({}));
+    if (notInitialRender.current && !isLastPageReached)
+      dispatch(fetchIssues({}));
     else notInitialRender.current = true;
-  }, [dispatch, filter, sort, page]);
+  }, [dispatch, filter, sort, page, isLastPageReached]);
 
   useEffect(() => {
     return () => {

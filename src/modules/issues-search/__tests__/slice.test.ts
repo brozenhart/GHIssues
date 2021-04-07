@@ -1,11 +1,12 @@
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
 import { IssuesResponseData } from '../models';
-import { fetchIssues, DefaultThunkArguments, initialState } from '../slice';
+import { fetchIssues, initialState } from '../slice';
 import { RootState, ServiceLocator, ThunkAPI } from 'root-types';
 import { AsyncThunkAction } from '@reduxjs/toolkit';
 import { NetworkServiceImplementation } from 'services/network-service';
 import { store as reduxStore } from '@/store';
+import { DefaultThunkArguments } from '../types';
 
 const mockAxios = axios.create();
 const serviceLocator: ServiceLocator = {
