@@ -104,6 +104,10 @@ const issuesSearchSlice = createSlice({
       state.issues = initialState.issues;
       state.filter = action.payload;
     },
+    setIssuesSort: (state, action: PayloadAction<IssuesSort>) => {
+      state.issues = initialState.issues;
+      state.sort = action.payload;
+    },
   },
   extraReducers: builder => {
     builder.addCase(fetchIssues.pending, state => {
@@ -125,6 +129,7 @@ export const {
   setNextPage,
   resetPage,
   setIssuesFilter,
+  setIssuesSort,
 } = issuesSearchSlice.actions;
 
 export const issuesSelectors = issuesAdapter.getSelectors<RootState>(

@@ -4,7 +4,9 @@ import {
   IssuesFilter,
   IssuesResponseData,
   issuesSelectors,
+  IssuesSort,
   setIssuesFilter,
+  setIssuesSort,
   setNextPage,
 } from '@/modules/issues-search';
 import { useAppDispatch } from '@/store';
@@ -22,7 +24,7 @@ import { RootState } from 'root-types';
 import SwitchSelector from 'react-native-switch-selector';
 
 export const IssuesScreen = (): JSX.Element => {
-  const { filter, page, isLoading } = useSelector(
+  const { filter, sort, page, isLoading } = useSelector(
     (state: RootState) => state.issuesSearch,
   );
   const issues = useSelector(issuesSelectors.selectAll);
@@ -30,7 +32,7 @@ export const IssuesScreen = (): JSX.Element => {
 
   useEffect(() => {
     dispatch(fetchIssues({}));
-  }, [dispatch, filter, page]);
+  }, [dispatch, filter, page, sort]);
 
   const renderItem = ({ item }: ListRenderItemInfo<IssuesResponseData>) => {
     return (
@@ -70,6 +72,23 @@ export const IssuesScreen = (): JSX.Element => {
           ]}
         />
       </View>
+      <View style={styles.filters}>
+        <Text style={styles.label}>{'Sort by:'}</Text>
+        <SwitchSelector
+          initial={0}
+          onPress={value => dispatch(setIssuesSort(value as IssuesSort))}
+          textColor={Color.DIM_GREY}
+          selectedColor={Color.WHITE}
+          buttonColor={Color.DIM_GREY}
+          borderColor={Color.DIM_GREY}
+          hasPadding
+          options={[
+            { label: 'Updated', value: 'updated' },
+            { label: 'Created', value: 'created' },
+            { label: 'Comments', value: 'comments' },
+          ]}
+        />
+      </View>
       <FlatList
         ListFooterComponent={renderFooter}
         data={issues}
@@ -97,6 +116,9 @@ const styles = StyleSheet.create({
   footer: {
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  label: {
+    marginBottom: 5,
   },
   listRow: {
     backgroundColor: Color.WHITE,
