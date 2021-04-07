@@ -2,6 +2,7 @@ import { MemoIssuesSearchScreen } from '@/screens';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Locale } from 'config/locale';
 import React from 'react';
+import { MemoIssusDetailScreen } from 'screens/IssueDetailScreen';
 import { IssuesScreen } from 'screens/IssuesScreen';
 import { NavigationRouteName } from './types';
 
@@ -23,6 +24,10 @@ export const IssuesStackNavigator = (): JSX.Element => {
         options={{
           title: Locale.ISSUES_HEADER_TITLE,
         }}
+      />
+      <IssuesStack.Screen
+        name={NavigationRouteName.ISSUE_DETAILS}
+        component={MemoIssusDetailScreen}
       />
     </IssuesStack.Navigator>
   );

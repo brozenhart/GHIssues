@@ -15,27 +15,28 @@ import { IssuesResponseData } from './models';
 export type IssuesFilter = 'all' | 'open' | 'closed';
 export type IssuesSort = 'updated' | 'created' | 'comments';
 
-export interface OrganizationState {
+export type OrganizationState = EntityState<IssuesResponseData> & {
   organization?: string;
   repository?: string;
-  issues: EntityState<IssuesResponseData>;
   isLoading: boolean;
   page: number;
   filter: IssuesFilter;
   sort: IssuesSort;
-}
+  selectedIssue?: IssuesResponseData;
+};
 
 export const ActionTypes = {
   FETCH_ISSUES: 'issues-search/fetchIssues',
+  SHOW_ISSUE_DETAILS: 'issues-search/showIssueDetails',
 };
 
-export type FetchIssuesArguments = {
+export type DefaultThunkArguments = {
   navigation?: ReturnType<typeof useNavigation>;
 };
 
 export const fetchIssues = createAsyncThunk<
   IssuesResponseData[],
-  FetchIssuesArguments,
+  DefaultThunkArguments,
   ThunkAPI
 >(
   ActionTypes.FETCH_ISSUES,
@@ -62,6 +63,7 @@ export const fetchIssues = createAsyncThunk<
           ...(sort && { sort }),
         },
       );
+
       if (navigation !== undefined && page === 1)
         navigation.navigate(NavigationRouteName.ISSUES);
       return response.data;
@@ -72,17 +74,37 @@ export const fetchIssues = createAsyncThunk<
   },
 );
 
+type ShowIssueDetailsThunkArguments = Required<DefaultThunkArguments> & {
+  issueId: number;
+};
+
+export const showIssueDetails = createAsyncThunk<
+  void,
+  ShowIssueDetailsThunkArguments,
+  ThunkAPI
+>(
+  ActionTypes.SHOW_ISSUE_DETAILS,
+  ({ navigation, issueId }, { dispatch, getState }) => {
+    const issue = issuesSelectors.selectById(getState(), issueId);
+    if (issue !== undefined) {
+      dispatch(setSelectedIssue(issue));
+      navigation.navigate(NavigationRouteName.ISSUE_DETAILS, { issue });
+    }
+  },
+);
+
 const issuesAdapter = createEntityAdapter<IssuesResponseData>({
-  selectId: repo => repo.id,
+  selectId: data => data.id,
 });
 
-export const initialState: OrganizationState = {
-  issues: issuesAdapter.getInitialState(),
+export const initialState: OrganizationState = issuesAdapter.getInitialState({
   isLoading: false,
   page: 1,
   filter: 'all',
   sort: 'updated',
-};
+  organization: 'facebook',
+  repository: 'react',
+});
 
 const issuesSearchSlice = createSlice({
   name: 'issues-search',
@@ -101,12 +123,17 @@ const issuesSearchSlice = createSlice({
       state.page = initialState.page;
     },
     setIssuesFilter: (state, action: PayloadAction<IssuesFilter>) => {
-      state.issues = initialState.issues;
+      state.entities = initialState.entities;
+      state.ids = initialState.ids;
       state.filter = action.payload;
     },
     setIssuesSort: (state, action: PayloadAction<IssuesSort>) => {
-      state.issues = initialState.issues;
+      state.entities = initialState.entities;
+      state.ids = initialState.ids;
       state.sort = action.payload;
+    },
+    setSelectedIssue: (state, action: PayloadAction<IssuesResponseData>) => {
+      state.selectedIssue = action.payload;
     },
   },
   extraReducers: builder => {
@@ -115,7 +142,7 @@ const issuesSearchSlice = createSlice({
     });
     builder.addCase(fetchIssues.fulfilled, (state, action) => {
       state.isLoading = false;
-      issuesAdapter.upsertMany(state.issues, action.payload);
+      issuesAdapter.upsertMany(state, action.payload);
     });
     builder.addCase(fetchIssues.rejected, state => {
       state.isLoading = false;
@@ -130,10 +157,11 @@ export const {
   resetPage,
   setIssuesFilter,
   setIssuesSort,
+  setSelectedIssue,
 } = issuesSearchSlice.actions;
 
 export const issuesSelectors = issuesAdapter.getSelectors<RootState>(
-  state => state.issuesSearch.issues,
+  state => state.issuesSearch,
 );
 
 export const issuesSearchReducer = issuesSearchSlice.reducer;

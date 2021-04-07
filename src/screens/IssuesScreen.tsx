@@ -8,12 +8,14 @@ import {
   setIssuesFilter,
   setIssuesSort,
   setNextPage,
+  showIssueDetails,
 } from '@/modules/issues-search';
 import { useAppDispatch } from '@/store';
 import React, { useEffect } from 'react';
 import {
   ActivityIndicator,
   ListRenderItemInfo,
+  Pressable,
   StyleSheet,
   Text,
   View,
@@ -22,8 +24,10 @@ import { FlatList } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import { RootState } from 'root-types';
 import SwitchSelector from 'react-native-switch-selector';
+import { useNavigation } from '@react-navigation/core';
 
 export const IssuesScreen = (): JSX.Element => {
+  const navigation = useNavigation();
   const { filter, sort, page, isLoading } = useSelector(
     (state: RootState) => state.issuesSearch,
   );
@@ -32,17 +36,21 @@ export const IssuesScreen = (): JSX.Element => {
 
   useEffect(() => {
     dispatch(fetchIssues({}));
-  }, [dispatch, filter, page, sort]);
+  }, [dispatch, filter, sort, page]);
 
   const renderItem = ({ item }: ListRenderItemInfo<IssuesResponseData>) => {
     return (
-      <View style={styles.listRow}>
+      <Pressable
+        style={styles.listRow}
+        onPress={() =>
+          dispatch(showIssueDetails({ navigation, issueId: item.id }))
+        }>
         <Text style={styles.title}>{item.title}</Text>
         <Text
           style={
             styles.small
           }>{`${Locale.ISSUES_STATUS_TITLE} ${item.state}`}</Text>
-      </View>
+      </Pressable>
     );
   };
 
@@ -58,34 +66,38 @@ export const IssuesScreen = (): JSX.Element => {
     <View style={styles.container}>
       <View style={styles.filters}>
         <SwitchSelector
+          {...switchStyleProps}
           initial={0}
           onPress={value => dispatch(setIssuesFilter(value as IssuesFilter))}
-          textColor={Color.DIM_GREY}
-          selectedColor={Color.WHITE}
-          buttonColor={Color.DIM_GREY}
-          borderColor={Color.DIM_GREY}
-          hasPadding
           options={[
-            { label: 'All', value: 'all' },
-            { label: 'Open', value: 'open' },
-            { label: 'Closed', value: 'closed' },
+            { label: Locale.ISSUES_FILTER_OPTION_LABEL_ALL, value: 'all' },
+            { label: Locale.ISSUES_FILTER_OPTION_LABEL_OPEN, value: 'open' },
+            {
+              label: Locale.ISSUES_FILTER_OPTION_LABEL_CLOSED,
+              value: 'closed',
+            },
           ]}
         />
       </View>
       <View style={styles.filters}>
-        <Text style={styles.label}>{'Sort by:'}</Text>
+        <Text style={styles.label}>{Locale.ISSUES_SORT_LABEL}</Text>
         <SwitchSelector
+          {...switchStyleProps}
           initial={0}
           onPress={value => dispatch(setIssuesSort(value as IssuesSort))}
-          textColor={Color.DIM_GREY}
-          selectedColor={Color.WHITE}
-          buttonColor={Color.DIM_GREY}
-          borderColor={Color.DIM_GREY}
-          hasPadding
           options={[
-            { label: 'Updated', value: 'updated' },
-            { label: 'Created', value: 'created' },
-            { label: 'Comments', value: 'comments' },
+            {
+              label: Locale.ISSUES_SORT_OPTION_LABEL_UPDATED,
+              value: 'updated',
+            },
+            {
+              label: Locale.ISSUES_SORT_OPTION_LABEL_CREATED,
+              value: 'created',
+            },
+            {
+              label: Locale.ISSUES_SORT_OPTION_LABEL_COMMENTS,
+              value: 'comments',
+            },
           ]}
         />
       </View>
@@ -101,6 +113,14 @@ export const IssuesScreen = (): JSX.Element => {
       />
     </View>
   );
+};
+
+const switchStyleProps = {
+  textColor: Color.DIM_GREY,
+  selectedColor: Color.WHITE,
+  buttonColor: Color.DIM_GREY,
+  borderColor: Color.DIM_GREY,
+  hasPadding: true,
 };
 
 const styles = StyleSheet.create({
