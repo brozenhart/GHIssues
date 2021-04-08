@@ -35,7 +35,7 @@ export const fetchIssues = createAsyncThunk<
     } = getState().issuesSearch;
     const { get } = extra.networkService;
     if (isLastPageReached)
-      rejectWithValue({ message: Locale.ERROR_ISSUES_NOT_FOUND });
+      return rejectWithValue({ message: Locale.ERROR_ISSUES_NOT_FOUND });
 
     try {
       await validateRequiredFields([
@@ -62,8 +62,15 @@ export const fetchIssues = createAsyncThunk<
         return rejectWithValue({ message: Locale.ERROR_NO_ISSUES });
       }
 
-      if (navigation !== undefined && page === 1)
-        navigation.navigate(NavigationRouteName.ISSUES);
+      if (navigation !== undefined) {
+        const { index, routes } = navigation.dangerouslyGetState();
+        if (
+          page === 1 &&
+          routes[index].name === NavigationRouteName.ISSUES_SEARCH
+        )
+          navigation.navigate(NavigationRouteName.ISSUES);
+      }
+
       return response.data;
     } catch (err) {
       if (!err.response) throw err;
