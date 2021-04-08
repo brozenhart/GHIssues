@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`entity adapters issues adapter creates an entity adapter for issues 1`] = `
+Object {
+  "addMany": [Function],
+  "addOne": [Function],
+  "getInitialState": [Function],
+  "getSelectors": [Function],
+  "removeAll": [Function],
+  "removeMany": [Function],
+  "removeOne": [Function],
+  "selectId": [Function],
+  "setAll": [Function],
+  "sortComparer": false,
+  "updateMany": [Function],
+  "updateOne": [Function],
+  "upsertMany": [Function],
+  "upsertOne": [Function],
+}
+`;
+
+exports[`entity adapters issues adapter returns generated selector for the issues adapter 1`] = `
+Object {
+  "selectAll": [Function],
+  "selectById": [Function],
+  "selectEntities": [Function],
+  "selectIds": [Function],
+  "selectTotal": [Function],
+}
+`;

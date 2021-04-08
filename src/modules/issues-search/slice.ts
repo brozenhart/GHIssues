@@ -89,7 +89,7 @@ export const showIssueDetails = createAsyncThunk<
     const issue = issuesSelectors.selectById(getState(), issueId);
     if (issue !== undefined) {
       dispatch(setSelectedIssue(issue));
-      navigation.navigate(NavigationRouteName.ISSUE_DETAILS, { issue });
+      navigation.navigate(NavigationRouteName.ISSUE_DETAILS);
     }
   },
 );
@@ -119,14 +119,14 @@ const issuesSearchSlice = createSlice({
       state.isLastPageReached = true;
     },
     setIssuesFilter: (state, action: PayloadAction<IssuesFilter>) => {
-      state.page = initialState.page;
+      state.page = 1;
       state.entities = initialState.entities;
       state.ids = initialState.ids;
       state.isLastPageReached = false;
       state.filter = action.payload;
     },
     setIssuesSort: (state, action: PayloadAction<IssuesSort>) => {
-      state.page = initialState.page;
+      state.page = 1;
       state.entities = initialState.entities;
       state.ids = initialState.ids;
       state.isLastPageReached = false;
@@ -140,7 +140,7 @@ const issuesSearchSlice = createSlice({
       state.ids = initialState.ids;
       state.filter = initialState.filter;
       state.sort = initialState.sort;
-      state.page = initialState.page;
+      state.page = 1;
       state.isLastPageReached = initialState.isLastPageReached;
       state.selectedIssue = undefined;
     },

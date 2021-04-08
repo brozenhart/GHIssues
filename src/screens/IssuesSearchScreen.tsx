@@ -1,12 +1,14 @@
 import { Color, Locale } from '@/config';
 import {
   fetchIssues,
+  resetError,
   setOrganization,
   setRepository,
 } from '@/modules/issues-search';
 import { useAppDispatch } from '@/store';
+import { showToast } from 'utils';
 import { useNavigation } from '@react-navigation/core';
-import React, { memo } from 'react';
+import React, { memo, useLayoutEffect } from 'react';
 import {
   ActivityIndicator,
   Button,
@@ -20,13 +22,17 @@ import { RootState } from 'root-types';
 
 const IssuesSearchScreen = (): JSX.Element => {
   const navigation = useNavigation();
-  const { organization, repository } = useSelector(
+  const { organization, repository, error } = useSelector(
     (state: RootState) => state.issuesSearch,
   );
   const isLoading = useSelector(
     (state: RootState) => state.issuesSearch.isLoading,
   );
   const dispatch = useAppDispatch();
+
+  useLayoutEffect(() => {
+    if (error !== undefined) showToast(error, () => dispatch(resetError()));
+  }, [dispatch, error]);
 
   return (
     <View style={styles.container}>

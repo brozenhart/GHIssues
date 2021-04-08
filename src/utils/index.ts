@@ -24,7 +24,7 @@ export const showToast = (
   );
 };
 
-type Field = {
+export type Field = {
   name: string;
   value?: string;
 };

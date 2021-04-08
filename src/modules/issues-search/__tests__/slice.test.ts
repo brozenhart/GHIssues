@@ -1,27 +1,63 @@
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
 import { IssuesResponseData } from '../models';
-import { fetchIssues, initialState } from '../slice';
+import {
+  fetchIssues,
+  initialState,
+  issuesSearchReducer,
+  resetError,
+  resetIssues,
+  setIssuesFilter,
+  setIssuesSort,
+  setLastPageReached,
+  setNextPage,
+  setOrganization,
+  setRepository,
+  setSelectedIssue,
+  showIssueDetails,
+} from '../slice';
 import { RootState, ServiceLocator, ThunkAPI } from 'root-types';
 import { AsyncThunkAction } from '@reduxjs/toolkit';
 import { NetworkServiceImplementation } from 'services/network-service';
-import { DefaultThunkArguments } from '../types';
+import {
+  DefaultThunkArguments,
+  IssuesSearchState,
+  ShowIssueDetailsThunkArguments,
+} from '../types';
+import '../entity-adapters';
 
 const mockAxios = axios.create();
 const serviceLocator: ServiceLocator = {
   networkService: new NetworkServiceImplementation(mockAxios),
 };
 
-describe('Repositories thunk', () => {
+const fakeIssue: IssuesResponseData = {
+  id: 0,
+  title: 'Issue title',
+  body: 'Issue body',
+  state: 'open',
+};
+const mockInitialState = initialState;
+jest.mock('../entity-adapters', () => {
+  return {
+    issuesAdapter: {
+      getInitialState: jest.fn(() => ({ ...mockInitialState })),
+    },
+    issuesSelectors: {
+      selectById: jest.fn(() => fakeIssue),
+    },
+  };
+});
+
+describe('issues-search thunks', () => {
   let api: jest.Mocked<MockAdapter>;
   let navigationMock: any;
 
   beforeAll(() => {
     api = new MockAdapter(mockAxios) as any;
-    navigationMock = { navigate: jest.fn() };
   });
 
-  describe('fetch repositories', () => {
+  describe('fetch issues', () => {
     let action: AsyncThunkAction<
       IssuesResponseData[],
       DefaultThunkArguments,
@@ -39,6 +75,7 @@ describe('Repositories thunk', () => {
 
     beforeEach(() => {
       dispatch = jest.fn();
+      navigationMock = { navigate: jest.fn() };
 
       arg = {};
       resultData = [
@@ -307,5 +344,245 @@ describe('Repositories thunk', () => {
         }),
       );
     });
+  });
+
+  describe('show issue details', () => {
+    let action: AsyncThunkAction<
+      void,
+      ShowIssueDetailsThunkArguments,
+      ThunkAPI
+    >;
+    let dispatch: any;
+    const mockState: RootState = {
+      issuesSearch: initialState,
+    };
+
+    let getState: () => RootState;
+
+    let arg: ShowIssueDetailsThunkArguments;
+
+    beforeEach(() => {
+      dispatch = jest.fn();
+      getState = () => mockState;
+
+      arg = { navigation: navigationMock, issueId: 0 };
+
+      action = showIssueDetails(arg);
+    });
+
+    it('stores selected issue and navigates to issue details', async () => {
+      const expectedActions = [
+        {
+          type: 'issues-search/showIssueDetails/pending',
+        },
+        { type: 'issues-search/setSelectedIssue', payload: fakeIssue },
+        {
+          type: 'issues-search/showIssueDetails/fulfilled',
+        },
+      ];
+
+      await action(dispatch, getState, serviceLocator);
+
+      expect(dispatch).toBeCalledTimes(3);
+      expect(dispatch.mock.calls[0][0]).toEqual(
+        expect.objectContaining(expectedActions[0]),
+      );
+      expect(dispatch.mock.calls[1][0]).toEqual(
+        expect.objectContaining(expectedActions[1]),
+      );
+      expect(dispatch.mock.calls[2][0]).toEqual(
+        expect.objectContaining(expectedActions[2]),
+      );
+    });
+  });
+});
+
+describe('issue-search actions', () => {
+  it('sets organization', () => {
+    const expectedState: Partial<IssuesSearchState> = {
+      organization: 'facebook',
+    };
+
+    const action = setOrganization('facebook');
+    const actual = issuesSearchReducer(initialState, action);
+
+    expect(actual).toEqual(expectedState);
+  });
+
+  it('sets repository', () => {
+    const expectedState: Partial<IssuesSearchState> = {
+      repository: 'react',
+    };
+
+    const action = setRepository('react');
+    const actual = issuesSearchReducer(initialState, action);
+
+    expect(actual).toEqual(expectedState);
+  });
+
+  it('sets the next page', () => {
+    const expectedState: Partial<IssuesSearchState> = {
+      page: 2,
+    };
+
+    const action = setNextPage;
+    const initialStateStub = { ...initialState, page: 1 };
+    const actual = issuesSearchReducer(initialStateStub, action);
+
+    expect(actual).toEqual(expectedState);
+  });
+
+  it('sets the last page reached flag', () => {
+    const expectedState: Partial<IssuesSearchState> = {
+      isLastPageReached: true,
+    };
+
+    const action = setLastPageReached;
+    const initialStateStub = { ...initialState };
+    const actual = issuesSearchReducer(initialStateStub, action);
+
+    expect(actual).toEqual(expectedState);
+  });
+
+  it('sets the issues filter', () => {
+    const expectedState: Partial<IssuesSearchState> = {
+      filter: 'closed',
+      isLastPageReached: false,
+      page: 1,
+      entities: undefined,
+      ids: undefined,
+      sort: 'comments',
+    };
+
+    const action = setIssuesFilter('closed');
+    const initialStateStub: IssuesSearchState = {
+      ...initialState,
+      page: 2,
+      isLastPageReached: true,
+      entities: {
+        0: { id: 0, title: 'title', body: 'body', state: 'open' },
+      },
+      ids: [0],
+      sort: 'comments',
+    };
+    const actual = issuesSearchReducer(initialStateStub, action);
+
+    expect(actual).toEqual(expectedState);
+  });
+
+  it('sets the issues sort', () => {
+    const expectedState: Partial<IssuesSearchState> = {
+      sort: 'comments',
+      isLastPageReached: false,
+      page: 1,
+      entities: undefined,
+      ids: undefined,
+      filter: 'open',
+    };
+
+    const action = setIssuesSort('comments');
+    const initialStateStub: IssuesSearchState = {
+      ...initialState,
+      page: 2,
+      isLastPageReached: true,
+      entities: {
+        0: { id: 0, title: 'title', body: 'body', state: 'open' },
+      },
+      ids: [0],
+      filter: 'open',
+    };
+    const actual = issuesSearchReducer(initialStateStub, action);
+
+    expect(actual).toEqual(expectedState);
+  });
+
+  it('sets the selected issue', () => {
+    const expectedState: Partial<IssuesSearchState> = {
+      sort: 'comments',
+      isLastPageReached: true,
+      page: 2,
+      entities: {
+        0: { id: 0, title: 'Issue title', body: 'Issue body', state: 'open' },
+      },
+      ids: [0],
+      filter: 'open',
+      selectedIssue: {
+        id: 0,
+        title: 'Issue title',
+        body: 'Issue body',
+        state: 'open',
+      },
+    };
+
+    const action = setSelectedIssue({
+      id: 0,
+      title: 'Issue title',
+      body: 'Issue body',
+      state: 'open',
+    });
+    const initialStateStub: IssuesSearchState = {
+      ...initialState,
+      page: 2,
+      isLastPageReached: true,
+      entities: {
+        0: { id: 0, title: 'Issue title', body: 'Issue body', state: 'open' },
+      },
+      ids: [0],
+      filter: 'open',
+      sort: 'comments',
+    };
+    const actual = issuesSearchReducer(initialStateStub, action);
+
+    expect(actual).toEqual(expectedState);
+  });
+
+  it('resets the stored issues', () => {
+    const expectedState: Partial<IssuesSearchState> = {
+      entities: undefined,
+      ids: undefined,
+      page: 1,
+    };
+
+    const action = resetIssues();
+    const initialStateStub: IssuesSearchState = {
+      ...initialState,
+      entities: {
+        0: { id: 0, title: 'Issue title', body: 'Issue body', state: 'open' },
+      },
+      ids: [0],
+    };
+    const actual = issuesSearchReducer(initialStateStub, action);
+
+    expect(actual).toEqual(expectedState);
+  });
+
+  it('resets the stored error', () => {
+    const expectedState: Partial<IssuesSearchState> = {
+      error: undefined,
+    };
+
+    const action = resetError();
+    const initialStateStub: IssuesSearchState = {
+      ...initialState,
+      error: { message: 'error' },
+    };
+    const actual = issuesSearchReducer(initialStateStub, action);
+
+    expect(actual).toEqual(expectedState);
+  });
+
+  it('sets loading to true when fetchIssues is pending', () => {
+    const expectedState: Partial<IssuesSearchState> = {
+      isLoading: true,
+    };
+
+    const action = fetchIssues.pending;
+    const initialStateStub: IssuesSearchState = {
+      ...initialState,
+      isLoading: false,
+    };
+    const actual = issuesSearchReducer(initialStateStub, action);
+
+    expect(actual).toEqual(expectedState);
   });
 });
