@@ -6,9 +6,9 @@ import {
 import { createStackNavigator } from '@react-navigation/stack';
 import { Locale } from 'config/locale';
 import React from 'react';
-import { NavigationRouteName } from './types';
+import { IssuesStackParamList, NavigationRouteName } from './types';
 
-const IssuesStack = createStackNavigator();
+const IssuesStack = createStackNavigator<IssuesStackParamList>();
 
 export const IssuesStackNavigator = (): JSX.Element => {
   return (

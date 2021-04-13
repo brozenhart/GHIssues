@@ -24,6 +24,7 @@ module.exports = {
           '@/store/*': './src/store/*',
           '@/screens': './src/screens',
           '@/navigators': './src/navigators',
+          '@/navigators/*': './src/navigators/*',
           '@/modules': './src/modules',
           '@/modules/*': './src/modules/*',
           '@/config': './src/config',

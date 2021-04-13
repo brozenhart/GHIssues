@@ -24,9 +24,7 @@ export const BookmarksScreen = ({ navigation }: any) => {
     return (
       <Pressable
         style={styles.listRow}
-        onPress={() =>
-          dispatch(showIssueDetails({ navigation, issueId: item.id }))
-        }>
+        onPress={() => dispatch(showIssueDetails({ navigation, issue: item }))}>
         <Text style={styles.title}>{item.title}</Text>
         <Text
           style={

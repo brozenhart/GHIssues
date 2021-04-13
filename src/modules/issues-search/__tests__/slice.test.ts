@@ -13,7 +13,6 @@ import {
   setNextPage,
   setOrganization,
   setRepository,
-  setSelectedIssue,
   showIssueDetails,
 } from '../slice';
 import { RootState, ServiceLocator, ThunkAPI } from 'root-types';
@@ -139,7 +138,7 @@ describe('issues-search thunks', () => {
     it('navigates to issues screen after initial successful fetch', async () => {
       navigationMock.dangerouslyGetState = jest.fn(() => ({
         index: 0,
-        routes: [{ name: 'issues-search' }],
+        routes: [{ name: 'IssuesSearch' }],
       }));
       arg = { navigation: navigationMock };
       action = fetchIssues(arg);
@@ -158,13 +157,13 @@ describe('issues-search thunks', () => {
 
       expect(navigationMock.dangerouslyGetState).toBeCalledTimes(1);
       expect(navigationMock.navigate).toBeCalledTimes(1);
-      expect(navigationMock.navigate).toBeCalledWith('issues');
+      expect(navigationMock.navigate).toBeCalledWith('Issues');
     });
 
     it('does not navigate to issues screen on when already on it', async () => {
       navigationMock.dangerouslyGetState = jest.fn(() => ({
         index: 1,
-        routes: [{ name: 'issues-search' }, { name: 'issues' }],
+        routes: [{ name: 'IssuesSearch' }, { name: 'Issues' }],
       }));
       arg = { navigation: navigationMock };
       action = fetchIssues(arg);
@@ -377,34 +376,30 @@ describe('issues-search thunks', () => {
       dispatch = jest.fn();
       getState = () => mockState;
 
-      arg = { navigation: navigationMock, issueId: 0 };
+      arg = {
+        navigation: navigationMock,
+        issue: {
+          id: 0,
+          title: 'issue title',
+          body: 'issue body',
+          state: 'open',
+        },
+      };
 
       action = showIssueDetails(arg);
     });
 
-    it('stores selected issue and navigates to issue details', async () => {
-      const expectedActions = [
-        {
-          type: 'issues-search/showIssueDetails/pending',
-        },
-        { type: 'issues-search/setSelectedIssue', payload: fakeIssue },
-        {
-          type: 'issues-search/showIssueDetails/fulfilled',
-        },
-      ];
-
+    it('navigates to issue details screen and passes the selected issue as an argument', async () => {
       await action(dispatch, getState, serviceLocator);
 
-      expect(dispatch).toBeCalledTimes(3);
-      expect(dispatch.mock.calls[0][0]).toEqual(
-        expect.objectContaining(expectedActions[0]),
-      );
-      expect(dispatch.mock.calls[1][0]).toEqual(
-        expect.objectContaining(expectedActions[1]),
-      );
-      expect(dispatch.mock.calls[2][0]).toEqual(
-        expect.objectContaining(expectedActions[2]),
-      );
+      expect(navigationMock.navigate).toBeCalledWith('IssueDetails', {
+        issue: {
+          body: 'issue body',
+          id: 0,
+          state: 'open',
+          title: 'issue title',
+        },
+      });
     });
   });
 });
@@ -502,46 +497,6 @@ describe('issues-search actions', () => {
       },
       ids: [0],
       filter: 'open',
-    };
-    const actual = issuesSearchReducer(fakeInitialState, action);
-
-    expect(actual).toEqual(expectedState);
-  });
-
-  it('sets the selected issue', () => {
-    const expectedState: Partial<IssuesSearchState> = {
-      sort: 'comments',
-      isLastPageReached: true,
-      page: 2,
-      entities: {
-        0: { id: 0, title: 'Issue title', body: 'Issue body', state: 'open' },
-      },
-      ids: [0],
-      filter: 'open',
-      selectedIssue: {
-        id: 0,
-        title: 'Issue title',
-        body: 'Issue body',
-        state: 'open',
-      },
-    };
-
-    const action = setSelectedIssue({
-      id: 0,
-      title: 'Issue title',
-      body: 'Issue body',
-      state: 'open',
-    });
-    const fakeInitialState: IssuesSearchState = {
-      ...issuesSearchInitialState,
-      page: 2,
-      isLastPageReached: true,
-      entities: {
-        0: { id: 0, title: 'Issue title', body: 'Issue body', state: 'open' },
-      },
-      ids: [0],
-      filter: 'open',
-      sort: 'comments',
     };
     const actual = issuesSearchReducer(fakeInitialState, action);
 

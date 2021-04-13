@@ -11,7 +11,7 @@ import {
   IssuesSort,
   ShowIssueDetailsThunkArguments,
 } from './types';
-import { issuesAdapter, issuesSelectors } from './entity-adapters';
+import { issuesAdapter } from './entity-adapters';
 
 export const ActionTypes = {
   FETCH_ISSUES: 'issues-search/fetchIssues',
@@ -83,16 +83,9 @@ export const showIssueDetails = createAsyncThunk<
   void,
   ShowIssueDetailsThunkArguments,
   ThunkAPI
->(
-  ActionTypes.SHOW_ISSUE_DETAILS,
-  ({ navigation, issueId }, { dispatch, getState }) => {
-    const issue = issuesSelectors.selectById(getState(), issueId);
-    if (issue !== undefined) {
-      dispatch(setSelectedIssue(issue));
-      navigation.navigate(NavigationRouteName.ISSUE_DETAILS);
-    }
-  },
-);
+>(ActionTypes.SHOW_ISSUE_DETAILS, ({ navigation, issue }) => {
+  navigation.navigate(NavigationRouteName.ISSUE_DETAILS, { issue });
+});
 
 export const initialState: IssuesSearchState = issuesAdapter.getInitialState({
   isLoading: false,
@@ -132,9 +125,6 @@ const issuesSearchSlice = createSlice({
       state.isLastPageReached = false;
       state.sort = action.payload;
     },
-    setSelectedIssue: (state, action: PayloadAction<IssuesResponseData>) => {
-      state.selectedIssue = action.payload;
-    },
     resetIssues: state => {
       state.entities = initialState.entities;
       state.ids = initialState.ids;
@@ -142,7 +132,6 @@ const issuesSearchSlice = createSlice({
       state.sort = initialState.sort;
       state.page = 1;
       state.isLastPageReached = initialState.isLastPageReached;
-      state.selectedIssue = undefined;
     },
     resetError: state => {
       state.error = undefined;
@@ -173,7 +162,6 @@ export const {
   setLastPageReached,
   setIssuesFilter,
   setIssuesSort,
-  setSelectedIssue,
   resetIssues,
   resetError,
 } = issuesSearchSlice.actions;

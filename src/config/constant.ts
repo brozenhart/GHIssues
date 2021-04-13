@@ -12,4 +12,4 @@ export const Constant = {
       password: API_TOKEN,
     },
   },
-};
+} as const;

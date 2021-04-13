@@ -14,7 +14,6 @@ export type IssuesSearchState = EntityState<IssuesResponseData> & {
   isLastPageReached: boolean;
   filter: IssuesFilter;
   sort: IssuesSort;
-  selectedIssue?: IssuesResponseData;
 };
 
 export type DefaultThunkArguments = {
@@ -22,5 +21,5 @@ export type DefaultThunkArguments = {
 };
 
 export type ShowIssueDetailsThunkArguments = Required<DefaultThunkArguments> & {
-  issueId: number;
+  issue: IssuesResponseData;
 };

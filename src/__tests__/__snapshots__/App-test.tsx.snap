@@ -541,6 +541,61 @@ exports[`App should render correctly 1`] = `
           ]
         }
       >
+        <View
+          style={
+            Array [
+              Object {
+                "flex": 1,
+              },
+              undefined,
+            ]
+          }
+        >
+          <View
+            style={
+              Array [
+                Object {
+                  "alignItems": "center",
+                  "alignSelf": "center",
+                  "height": "100%",
+                  "justifyContent": "center",
+                  "minWidth": 25,
+                  "position": "absolute",
+                  "width": "100%",
+                },
+                Object {
+                  "opacity": 1,
+                },
+              ]
+            }
+          >
+            <Text>
+              🔍
+            </Text>
+          </View>
+          <View
+            style={
+              Array [
+                Object {
+                  "alignItems": "center",
+                  "alignSelf": "center",
+                  "height": "100%",
+                  "justifyContent": "center",
+                  "minWidth": 25,
+                  "position": "absolute",
+                  "width": "100%",
+                },
+                Object {
+                  "opacity": 0,
+                },
+              ]
+            }
+          >
+            <Text>
+              🔍
+            </Text>
+          </View>
+        </View>
         <Text
           numberOfLines={1}
           style={
@@ -596,6 +651,61 @@ exports[`App should render correctly 1`] = `
           ]
         }
       >
+        <View
+          style={
+            Array [
+              Object {
+                "flex": 1,
+              },
+              undefined,
+            ]
+          }
+        >
+          <View
+            style={
+              Array [
+                Object {
+                  "alignItems": "center",
+                  "alignSelf": "center",
+                  "height": "100%",
+                  "justifyContent": "center",
+                  "minWidth": 25,
+                  "position": "absolute",
+                  "width": "100%",
+                },
+                Object {
+                  "opacity": 0,
+                },
+              ]
+            }
+          >
+            <Text>
+              🔖
+            </Text>
+          </View>
+          <View
+            style={
+              Array [
+                Object {
+                  "alignItems": "center",
+                  "alignSelf": "center",
+                  "height": "100%",
+                  "justifyContent": "center",
+                  "minWidth": 25,
+                  "position": "absolute",
+                  "width": "100%",
+                },
+                Object {
+                  "opacity": 1,
+                },
+              ]
+            }
+          >
+            <Text>
+              🔖
+            </Text>
+          </View>
+        </View>
         <Text
           numberOfLines={1}
           style={

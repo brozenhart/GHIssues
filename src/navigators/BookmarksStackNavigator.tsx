@@ -2,9 +2,9 @@ import { BookmarksScreen, MemoIssueDetailScreen } from '@/screens';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Locale } from 'config/locale';
 import React from 'react';
-import { NavigationRouteName } from './types';
+import { BookmarksStackParamList, NavigationRouteName } from './types';
 
-const BookmarksStack = createStackNavigator();
+const BookmarksStack = createStackNavigator<BookmarksStackParamList>();
 
 export const BookmarksStackNavigator = (): JSX.Element => {
   return (

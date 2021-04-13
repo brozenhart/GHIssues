@@ -47,6 +47,7 @@
       "@/config": ["./config"],
       "@/modules/*": ["./modules/*"],
       "@/navigators": ["./navigators"],
+      "@/navigators/*": ["./navigators/*"],
       "@/screens": ["./screens"],
       "@/store": ["./store"]
     } /* A series of entries which re-map imports to lookup locations relative to the 'baseUrl'. */,

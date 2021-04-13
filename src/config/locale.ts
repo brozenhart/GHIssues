@@ -30,4 +30,4 @@ export const Locale = {
   DEFAULT_ERROR_MESSAGE: 'Something when wrong. Please try again later.',
   ERROR_ISSUES_NOT_FOUND: 'No issues found.',
   ERROR_NO_ISSUES: 'Repository has no issues.',
-};
+} as const;
