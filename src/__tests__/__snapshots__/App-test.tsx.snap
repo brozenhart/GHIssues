@@ -508,7 +508,7 @@ exports[`App should render correctly 1`] = `
       }
     >
       <View
-        accessibilityLabel="Issues, tab, 1 of 1"
+        accessibilityLabel="Issues, tab, 1 of 2"
         accessibilityRole="button"
         accessibilityState={
           Object {
@@ -560,6 +560,61 @@ exports[`App should render correctly 1`] = `
           }
         >
           Issues
+        </Text>
+      </View>
+      <View
+        accessibilityLabel="Bookmarks, tab, 2 of 2"
+        accessibilityRole="button"
+        accessibilityState={
+          Object {
+            "selected": false,
+          }
+        }
+        accessible={true}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          Array [
+            Object {
+              "alignItems": "center",
+              "flex": 1,
+            },
+            Object {
+              "backgroundColor": "transparent",
+            },
+            Object {
+              "flexDirection": "column",
+              "justifyContent": "flex-end",
+            },
+            undefined,
+          ]
+        }
+      >
+        <Text
+          numberOfLines={1}
+          style={
+            Array [
+              Object {
+                "backgroundColor": "transparent",
+                "textAlign": "center",
+              },
+              Object {
+                "color": "#8E8E8F",
+              },
+              Object {
+                "fontSize": 10,
+              },
+              undefined,
+            ]
+          }
+        >
+          Bookmarks
         </Text>
       </View>
     </View>

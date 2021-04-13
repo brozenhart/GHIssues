@@ -1,14 +1,41 @@
-import { Color } from '@/config';
-import React, { memo } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { Color, Locale } from '@/config';
+import { bookmarksSelectors, toggleBookmark } from '@/modules/bookmarks';
+import { useAppDispatch } from '@/store';
+import React, { memo, useLayoutEffect } from 'react';
+import { Button, StyleSheet, Text } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import { RootState } from 'root-types';
 
-const IssueDetailScreen = (): JSX.Element => {
+type Props = {
+  navigation: any;
+};
+
+const IssueDetailScreen = ({ navigation }: Props): JSX.Element => {
+  const dispatch = useAppDispatch();
   const issue = useSelector(
     (state: RootState) => state.issuesSearch.selectedIssue,
   );
+  const isBookmarked = useSelector(
+    (state: RootState) =>
+      bookmarksSelectors.selectById(state, issue!.id) !== undefined,
+  );
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      // eslint-disable-next-line react/display-name
+      headerRight: () => (
+        <Button
+          title={
+            isBookmarked
+              ? Locale.ISSUE_DETAILS_UNBOOKMARK
+              : Locale.ISSUE_DETAILS_BOOKMARK
+          }
+          onPress={() => dispatch(toggleBookmark({ issue: issue! }))}
+        />
+      ),
+    });
+  }, [dispatch, navigation, isBookmarked, issue]);
+
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.container}>
       <Text style={styles.header}>{issue!.title}</Text>
@@ -17,7 +44,7 @@ const IssueDetailScreen = (): JSX.Element => {
   );
 };
 
-export const MemoIssusDetailScreen = memo(IssueDetailScreen);
+export const MemoIssueDetailScreen = memo(IssueDetailScreen);
 
 const styles = StyleSheet.create({
   container: {

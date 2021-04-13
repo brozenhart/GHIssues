@@ -1,7 +1,11 @@
 import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { IssuesStackNavigator, NavigationRouteName } from '@/navigators';
+import {
+  BookmarksStackNavigator,
+  IssuesStackNavigator,
+  NavigationRouteName,
+} from '@/navigators';
 import { Locale } from '@/config';
 import { enableScreens } from 'react-native-screens';
 import { Provider } from 'react-redux';
@@ -21,6 +25,13 @@ export const App = (): JSX.Element => {
             component={IssuesStackNavigator}
             options={{
               tabBarLabel: Locale.TAB_BAR_LABEL_ISSUES,
+            }}
+          />
+          <Tab.Screen
+            name={NavigationRouteName.BOOKMARKS}
+            component={BookmarksStackNavigator}
+            options={{
+              tabBarLabel: Locale.TAB_BAR_LABEL_BOOKMARKS,
             }}
           />
         </Tab.Navigator>

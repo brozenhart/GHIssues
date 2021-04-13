@@ -1,5 +1,7 @@
 export const Locale = {
   TAB_BAR_LABEL_ISSUES: 'Issues',
+  TAB_BAR_LABEL_BOOKMARKS: 'Bookmarks',
+
   ISSUES_SEARCH_HEADER_TITLE: 'Search issues',
   ISSUES_SEARCH_TEXTFIELD_LABEL_ORGANIZATION: 'Github Organization:',
   ISSUES_SEARCH_TEXTFIELD_LABEL_REPOSITORY: 'Repository:',
@@ -17,6 +19,12 @@ export const Locale = {
   ISSUES_SORT_OPTION_LABEL_UPDATED: 'Updated',
   ISSUES_SORT_OPTION_LABEL_CREATED: 'Created',
   ISSUES_SORT_OPTION_LABEL_COMMENTS: 'Comments',
+
+  ISSUE_DETAILS_BOOKMARK: 'Bookmark',
+  ISSUE_DETAILS_UNBOOKMARK: 'Unbookmark',
+
+  BOOKMARKS_HEADER_TITLE: 'Bookmarked issues',
+  BOOKMARKS_NO_ISSUES_BOOKMARKED: 'You have 0 issues bookmarked.',
 
   DEFAULT_ERROR_TITLE: 'Error',
   DEFAULT_ERROR_MESSAGE: 'Something when wrong. Please try again later.',

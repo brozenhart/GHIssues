@@ -3,7 +3,7 @@ import axios from 'axios';
 import { IssuesResponseData } from '../models';
 import {
   fetchIssues,
-  initialState,
+  initialState as issuesSearchInitialState,
   issuesSearchReducer,
   resetError,
   resetIssues,
@@ -25,6 +25,7 @@ import {
   ShowIssueDetailsThunkArguments,
 } from '../types';
 import '../entity-adapters';
+import { initialState as bookmarksInitialState } from '@/modules/bookmarks';
 
 const mockAxios = axios.create();
 const serviceLocator: ServiceLocator = {
@@ -37,7 +38,7 @@ const fakeIssue: IssuesResponseData = {
   body: 'Issue body',
   state: 'open',
 };
-const mockInitialState = initialState;
+const mockInitialState = issuesSearchInitialState;
 jest.mock('../entity-adapters', () => {
   return {
     issuesAdapter: {
@@ -65,7 +66,8 @@ describe('issues-search thunks', () => {
     >;
     let dispatch: any;
     let mockState: RootState = {
-      issuesSearch: initialState,
+      issuesSearch: issuesSearchInitialState,
+      bookmarks: bookmarksInitialState,
     };
 
     let getState: () => RootState;
@@ -95,6 +97,7 @@ describe('issues-search thunks', () => {
 
     it('calls the api correctly', async () => {
       mockState = {
+        ...mockState,
         issuesSearch: {
           ...mockState.issuesSearch,
           organization: 'facebook',
@@ -141,6 +144,7 @@ describe('issues-search thunks', () => {
       arg = { navigation: navigationMock };
       action = fetchIssues(arg);
       mockState = {
+        ...mockState,
         issuesSearch: {
           ...mockState.issuesSearch,
           organization: 'facebook',
@@ -165,6 +169,7 @@ describe('issues-search thunks', () => {
       arg = { navigation: navigationMock };
       action = fetchIssues(arg);
       mockState = {
+        ...mockState,
         issuesSearch: {
           ...mockState.issuesSearch,
           organization: 'facebook',
@@ -186,7 +191,8 @@ describe('issues-search thunks', () => {
         type: 'issues-search/fetchIssues/rejected',
       };
       mockState = {
-        issuesSearch: initialState,
+        ...mockState,
+        issuesSearch: issuesSearchInitialState,
       };
       getState = () => mockState;
       api.onGet(`repos///issues`).reply(404);
@@ -208,8 +214,9 @@ describe('issues-search thunks', () => {
         type: 'issues-search/fetchIssues/rejected',
       };
       mockState = {
+        ...mockState,
         issuesSearch: {
-          ...initialState,
+          ...issuesSearchInitialState,
           organization: 'facebook',
         },
       };
@@ -233,8 +240,9 @@ describe('issues-search thunks', () => {
         type: 'issues-search/fetchIssues/rejected',
       };
       mockState = {
+        ...mockState,
         issuesSearch: {
-          ...initialState,
+          ...issuesSearchInitialState,
           organization: 'invalid-organization',
           repository: 'react',
         },
@@ -259,8 +267,9 @@ describe('issues-search thunks', () => {
         type: 'issues-search/fetchIssues/rejected',
       };
       mockState = {
+        ...mockState,
         issuesSearch: {
-          ...initialState,
+          ...issuesSearchInitialState,
           organization: 'facebook',
           repository: 'invalid-repository',
         },
@@ -293,8 +302,9 @@ describe('issues-search thunks', () => {
         },
       ];
       mockState = {
+        ...mockState,
         issuesSearch: {
-          ...initialState,
+          ...issuesSearchInitialState,
           organization: 'facebook',
           repository: 'valid-repo-without-issues',
         },
@@ -325,8 +335,9 @@ describe('issues-search thunks', () => {
         type: 'issues-search/fetchIssues/rejected',
       };
       mockState = {
+        ...mockState,
         issuesSearch: {
-          ...initialState,
+          ...issuesSearchInitialState,
           organization: 'valid-organization',
           repository: 'valid-repository',
           isLastPageReached: true,
@@ -354,7 +365,8 @@ describe('issues-search thunks', () => {
     >;
     let dispatch: any;
     const mockState: RootState = {
-      issuesSearch: initialState,
+      issuesSearch: issuesSearchInitialState,
+      bookmarks: bookmarksInitialState,
     };
 
     let getState: () => RootState;
@@ -397,14 +409,14 @@ describe('issues-search thunks', () => {
   });
 });
 
-describe('issue-search actions', () => {
+describe('issues-search actions', () => {
   it('sets organization', () => {
     const expectedState: Partial<IssuesSearchState> = {
       organization: 'facebook',
     };
 
     const action = setOrganization('facebook');
-    const actual = issuesSearchReducer(initialState, action);
+    const actual = issuesSearchReducer(issuesSearchInitialState, action);
 
     expect(actual).toEqual(expectedState);
   });
@@ -415,7 +427,7 @@ describe('issue-search actions', () => {
     };
 
     const action = setRepository('react');
-    const actual = issuesSearchReducer(initialState, action);
+    const actual = issuesSearchReducer(issuesSearchInitialState, action);
 
     expect(actual).toEqual(expectedState);
   });
@@ -426,8 +438,8 @@ describe('issue-search actions', () => {
     };
 
     const action = setNextPage;
-    const initialStateStub = { ...initialState, page: 1 };
-    const actual = issuesSearchReducer(initialStateStub, action);
+    const fakeInitialState = { ...issuesSearchInitialState, page: 1 };
+    const actual = issuesSearchReducer(fakeInitialState, action);
 
     expect(actual).toEqual(expectedState);
   });
@@ -438,8 +450,8 @@ describe('issue-search actions', () => {
     };
 
     const action = setLastPageReached;
-    const initialStateStub = { ...initialState };
-    const actual = issuesSearchReducer(initialStateStub, action);
+    const fakeInitialState = { ...issuesSearchInitialState };
+    const actual = issuesSearchReducer(fakeInitialState, action);
 
     expect(actual).toEqual(expectedState);
   });
@@ -455,8 +467,8 @@ describe('issue-search actions', () => {
     };
 
     const action = setIssuesFilter('closed');
-    const initialStateStub: IssuesSearchState = {
-      ...initialState,
+    const fakeInitialState: IssuesSearchState = {
+      ...issuesSearchInitialState,
       page: 2,
       isLastPageReached: true,
       entities: {
@@ -465,7 +477,7 @@ describe('issue-search actions', () => {
       ids: [0],
       sort: 'comments',
     };
-    const actual = issuesSearchReducer(initialStateStub, action);
+    const actual = issuesSearchReducer(fakeInitialState, action);
 
     expect(actual).toEqual(expectedState);
   });
@@ -481,8 +493,8 @@ describe('issue-search actions', () => {
     };
 
     const action = setIssuesSort('comments');
-    const initialStateStub: IssuesSearchState = {
-      ...initialState,
+    const fakeInitialState: IssuesSearchState = {
+      ...issuesSearchInitialState,
       page: 2,
       isLastPageReached: true,
       entities: {
@@ -491,7 +503,7 @@ describe('issue-search actions', () => {
       ids: [0],
       filter: 'open',
     };
-    const actual = issuesSearchReducer(initialStateStub, action);
+    const actual = issuesSearchReducer(fakeInitialState, action);
 
     expect(actual).toEqual(expectedState);
   });
@@ -520,8 +532,8 @@ describe('issue-search actions', () => {
       body: 'Issue body',
       state: 'open',
     });
-    const initialStateStub: IssuesSearchState = {
-      ...initialState,
+    const fakeInitialState: IssuesSearchState = {
+      ...issuesSearchInitialState,
       page: 2,
       isLastPageReached: true,
       entities: {
@@ -531,7 +543,7 @@ describe('issue-search actions', () => {
       filter: 'open',
       sort: 'comments',
     };
-    const actual = issuesSearchReducer(initialStateStub, action);
+    const actual = issuesSearchReducer(fakeInitialState, action);
 
     expect(actual).toEqual(expectedState);
   });
@@ -544,14 +556,14 @@ describe('issue-search actions', () => {
     };
 
     const action = resetIssues();
-    const initialStateStub: IssuesSearchState = {
-      ...initialState,
+    const fakeInitialState: IssuesSearchState = {
+      ...issuesSearchInitialState,
       entities: {
         0: { id: 0, title: 'Issue title', body: 'Issue body', state: 'open' },
       },
       ids: [0],
     };
-    const actual = issuesSearchReducer(initialStateStub, action);
+    const actual = issuesSearchReducer(fakeInitialState, action);
 
     expect(actual).toEqual(expectedState);
   });
@@ -562,11 +574,11 @@ describe('issue-search actions', () => {
     };
 
     const action = resetError();
-    const initialStateStub: IssuesSearchState = {
-      ...initialState,
+    const fakeInitialState: IssuesSearchState = {
+      ...issuesSearchInitialState,
       error: { message: 'error' },
     };
-    const actual = issuesSearchReducer(initialStateStub, action);
+    const actual = issuesSearchReducer(fakeInitialState, action);
 
     expect(actual).toEqual(expectedState);
   });
@@ -577,11 +589,11 @@ describe('issue-search actions', () => {
     };
 
     const action = fetchIssues.pending;
-    const initialStateStub: IssuesSearchState = {
-      ...initialState,
+    const fakeInitialState: IssuesSearchState = {
+      ...issuesSearchInitialState,
       isLoading: false,
     };
-    const actual = issuesSearchReducer(initialStateStub, action);
+    const actual = issuesSearchReducer(fakeInitialState, action);
 
     expect(actual).toEqual(expectedState);
   });

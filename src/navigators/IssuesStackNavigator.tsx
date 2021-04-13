@@ -1,9 +1,11 @@
-import { MemoIssuesSearchScreen } from '@/screens';
+import {
+  IssuesScreen,
+  MemoIssueDetailScreen,
+  MemoIssuesSearchScreen,
+} from '@/screens';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Locale } from 'config/locale';
 import React from 'react';
-import { MemoIssusDetailScreen } from 'screens/IssueDetailScreen';
-import { IssuesScreen } from 'screens/IssuesScreen';
 import { NavigationRouteName } from './types';
 
 const IssuesStack = createStackNavigator();
@@ -27,7 +29,7 @@ export const IssuesStackNavigator = (): JSX.Element => {
       />
       <IssuesStack.Screen
         name={NavigationRouteName.ISSUE_DETAILS}
-        component={MemoIssusDetailScreen}
+        component={MemoIssueDetailScreen}
       />
     </IssuesStack.Navigator>
   );
